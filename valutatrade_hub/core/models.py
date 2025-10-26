@@ -4,7 +4,9 @@ import hashlib
 import uuid
 from datetime import datetime
 from copy import deepcopy
-from .utils import get_user_by_id, get_rates
+from .utils import get_user_by_id
+from .currencies import get_currency
+from .exceptions import CurrencyNotFoundError, InsufficientFundsError
 
 class User:
     def __init__(self, user_id: int, username: str, password: str):
@@ -88,10 +90,12 @@ class Wallet:
         self._balance = self._validate_balance(balance)
 
     def _validate_currency_code(self, currency_code: str) -> str:
-        if not isinstance(currency_code, str) or not currency_code.strip():
-            print("Предупреждение: Код валюты должен быть непустой строкой")
+        try:
+            currency = get_currency(currency_code)
+            return currency.code
+        except CurrencyNotFoundError as e:
+            print(f"Предупреждение: {e.message}")
             return "UNKNOWN"
-        return currency_code.strip()
 
     def _validate_balance(self, value: float) -> float:
         if not isinstance(value, (int, float)):
@@ -131,8 +135,7 @@ class Wallet:
         if validated_amount is None:
             return False
         if validated_amount > self._balance:
-            print("Предупреждение: Недостаточно средств для снятия")
-            return False
+            raise InsufficientFundsError(self._balance, validated_amount, self.currency_code)
         self._balance -= validated_amount
         return True
 
@@ -162,32 +165,36 @@ class Portfolio:
         return deepcopy(self._wallets)
 
     def add_currency(self, currency_code: str) -> bool:
-        if not isinstance(currency_code, str) or not currency_code.strip():
-            print(f"Предупреждение: Код валюты должен быть непустой строкой")
+        try:
+            currency = get_currency(currency_code)
+            if currency.code in self._wallets:
+                print(f"Предупреждение: Кошелёк для валюты {currency_code} уже существует")
+                return False
+            self._wallets[currency.code] = Wallet(currency.code)
+            return True
+        except CurrencyNotFoundError as e:
+            print(f"Предупреждение: {e.message}")
             return False
-            
-        if currency_code in self._wallets:
-            print(f"Предупреждение: Кошелёк для валюты {currency_code} уже существует")
-            return False
-        
-        self._wallets[currency_code] = Wallet(currency_code)
-        return True
 
     def get_wallet(self, currency_code: str) -> Optional[Wallet]:
-        if not isinstance(currency_code, str) or not currency_code.strip():
-            print(f"Предупреждение: Код валюты должен быть непустой строкой")
+        try:
+            currency = get_currency(currency_code)
+            wallet = self._wallets.get(currency.code)
+            if wallet is None:
+                print(f"Предупреждение: Кошелёк для валюты {currency_code} не найден")
+            return wallet
+        except CurrencyNotFoundError as e:
+            print(f"Предупреждение: {e.message}")
             return None
-            
-        wallet = self._wallets.get(currency_code)
-        if wallet is None:
-            print(f"Предупреждение: Кошелёк для валюты {currency_code} не найден")
-        return wallet
 
     def get_total_value(self, base_currency: str = 'USD') -> float:
-        if not isinstance(base_currency, str) or not base_currency.strip():
-            print(f"Предупреждение: Код базовой валюты должен быть непустой строкой")
+        try:
+            get_currency(base_currency)
+        except CurrencyNotFoundError as e:
+            print(f"Предупреждение: {e.message}")
             return 0.0
         
+        from .utils import get_rates
         rates = get_rates()
 
         total_value = 0.0
