@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+import json
+import os
+from typing import Dict
+from datetime import datetime
+from .config import ParserConfig
+
+class Storage:
+    def __init__(self, config: ParserConfig):
+        self.config = config
+        os.makedirs('data', exist_ok=True)
+
+    def save_rates(self, rates: Dict[str, Dict[str, any]], last_refresh: str) -> None:
+        data = {
+            "pairs": rates,
+            "last_refresh": last_refresh
+        }
+        with open(self.config.RATES_FILE_PATH, 'w') as f:
+            json.dump(data, f, indent=2)
+
+    def save_history(self, rates: Dict[str, Dict[str, any]]) -> None:
+        history = self._load_history()
+        for key, rate_data in rates.items():
+            timestamp = rate_data["updated_at"]
+            hist_id = f"{key}_{timestamp}"
+            entry = {
+                "id": hist_id,
+                "from_currency": key.split("_")[0],
+                "to_currency": key.split("_")[1],
+                "rate": rate_data["rate"],
+                "timestamp": timestamp,
+                "source": rate_data["source"],
+                "meta": {}  # Можно добавить дополнительные мета-данные
+            }
+            if hist_id not in [e["id"] for e in history]:
+                history.append(entry)
+        with open(self.config.HISTORY_FILE_PATH, 'w') as f:
+            json.dump(history, f, indent=2)
+
+    def _load_history(self) -> list:
+        try:
+            with open(self.config.HISTORY_FILE_PATH, 'r') as f:
+                return json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return []
+
+    def load_rates(self) -> Dict[str, any]:
+        try:
+            with open(self.config.RATES_FILE_PATH, 'r') as f:
+                return json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return {"pairs": {}, "last_refresh": None}

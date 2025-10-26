@@ -3,6 +3,11 @@ import argparse
 from ..core.models import User
 from ..core.usecases import UseCases
 from ..core.exceptions import InsufficientFundsError, CurrencyNotFoundError, ApiRequestError
+from ..parser_service.updater import get_updater
+from ..parser_service.storage import Storage
+from ..parser_service.config import ParserConfig
+from ..infra.settings import SettingsLoader
+from datetime import datetime
 
 class CLI:
     def __init__(self):
@@ -37,6 +42,16 @@ class CLI:
         deposit_parser.add_argument('--currency', type=str, required=True)
         deposit_parser.add_argument('--amount', type=float, required=True)
 
+        # Новая команда update-rates
+        update_rates_parser = self.subparsers.add_parser('update-rates')
+        update_rates_parser.add_argument('--source', type=str, required=False)
+
+        # Новая команда show-rates
+        show_rates_parser = self.subparsers.add_parser('show-rates')
+        show_rates_parser.add_argument('--currency', type=str, required=False)
+        show_rates_parser.add_argument('--top', type=int, required=False)
+        show_rates_parser.add_argument('--base', type=str, default='USD')
+
         help_parser = self.subparsers.add_parser('help')
 
         print("Добро пожаловать в ValutaTrade CLI!")
@@ -58,6 +73,10 @@ class CLI:
         print("Получить курс валют (поддерживаемые валюты: USD, EUR, BTC, ETH)\n*******")
         print("\ndeposit --currency <currency> --amount <amount>")
         print("Пополнить баланс\n*******")
+        print("\nupdate-rates [--source <coingecko|exchangerate>]")
+        print("Обновить курсы валют\n*******")
+        print("\nshow-rates [--currency <currency>] [--top <N>] [--base <currency>]")
+        print("Показать актуальные курсы\n*******")
         print("\nhelp")
         print("Показать список команд\n*******")
         print("\nexit")
@@ -102,6 +121,48 @@ class CLI:
                     print(UseCases.deposit(self.current_user.user_id, args.currency.upper(), args.amount))
             elif args.command == 'get-rate':
                 print(UseCases.get_rate(args.__dict__['from'].upper(), args.to.upper()))
+            elif args.command == 'update-rates':
+                updater = get_updater()
+                count = updater.run_update(args.source)
+                if count > 0:
+                    print(f"Update successful. Total rates updated: {count}. Last refresh: {datetime.utcnow().isoformat()}")
+                else:
+                    print("Update completed with errors. Check logs for details.")
+            elif args.command == 'show-rates':
+                config = ParserConfig()
+                storage = Storage(config)
+                data = storage.load_rates()
+                pairs = data.get("pairs", {})
+                last_refresh = data.get("last_refresh", "Unknown")
+                if not pairs:
+                    print("Локальный кеш курсов пуст. Выполните 'update-rates', чтобы загрузить данные.")
+                    return
+
+                filtered = {}
+                base = args.base.upper()
+                for key, value in pairs.items():
+                    from_curr, to_curr = key.split("_")
+                    if to_curr != base:
+                        continue
+                    if args.currency and from_curr != args.currency.upper():
+                        continue
+                    filtered[key] = value
+
+                if not filtered:
+                    if args.currency:
+                        print(f"Курс для '{args.currency.upper()}' не найден в кеше.")
+                    else:
+                        print("Нет данных по указанным фильтрам.")
+                    return
+
+                # Сортировка для --top (самые дорогие по rate descending)
+                sorted_pairs = sorted(filtered.items(), key=lambda x: x[1]["rate"], reverse=True)
+                if args.top:
+                    sorted_pairs = sorted_pairs[:args.top]
+
+                print(f"Rates from cache (updated at {last_refresh}):")
+                for key, value in sorted_pairs:
+                    print(f"- {key}: {value['rate']:.8f}")
             elif args.command == 'help':
                 self.show_help()
             else:
@@ -112,6 +173,8 @@ class CLI:
             print(f"Ошибка: {e.message}. Поддерживаемые валюты: USD, EUR, BTC, ETH.")
         except ApiRequestError as e:
             print(f"Ошибка: {e.message}. Повторите попытку позже или проверьте сеть.")
+        except ValueError as e:
+            print(f"Ошибка конфигурации: {str(e)}")
 
 if __name__ == "__main__":
     cli = CLI()

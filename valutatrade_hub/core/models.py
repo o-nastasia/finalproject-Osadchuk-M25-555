@@ -157,7 +157,7 @@ class Portfolio:
     def user(self) -> User:
         user = get_user_by_id(self._user_id)
         if user is None:
-            raise ValueError(f"Пользователь с ID {self._user_id} не найден")
+            raise ValueError(f"Пользователь с ID {self._user_id} не найден.")
         return user
 
     @property
@@ -168,12 +168,12 @@ class Portfolio:
         try:
             currency = get_currency(currency_code)
             if currency.code in self._wallets:
-                print(f"Предупреждение: Кошелёк для валюты {currency_code} уже существует")
+                print(f"Предупреждение: Кошелёк для валюты {currency_code} уже существует.")
                 return False
             self._wallets[currency.code] = Wallet(currency.code)
             return True
         except CurrencyNotFoundError as e:
-            print(f"Предупреждение: {e.message}")
+            print(f"Предупреждение: {e.message}.")
             return False
 
     def get_wallet(self, currency_code: str) -> Optional[Wallet]:
@@ -181,7 +181,7 @@ class Portfolio:
             currency = get_currency(currency_code)
             wallet = self._wallets.get(currency.code)
             if wallet is None:
-                print(f"Предупреждение: Кошелёк для валюты {currency_code} не найден")
+                print(f"Предупреждение: Кошелёк для валюты {currency_code} не найден.")
             return wallet
         except CurrencyNotFoundError as e:
             print(f"Предупреждение: {e.message}")
@@ -191,7 +191,7 @@ class Portfolio:
         try:
             get_currency(base_currency)
         except CurrencyNotFoundError as e:
-            print(f"Предупреждение: {e.message}")
+            print(f"Предупреждение: {e.message}.")
             return 0.0
         
         from .utils import get_rates
@@ -209,11 +209,11 @@ class Portfolio:
                     rate_key = f"{currency}_{base_currency}"
                     rate = rates.get(rate_key, {}).get('rate', None)
                     if rate is None:
-                        print(f"Предупреждение: Курс для валюты {currency}→{base_currency} не найден")
+                        print(f"Предупреждение: Курс для валюты {currency}→{base_currency} не найден.")
                         return 0.0
                     total_value += balance * rate
             except Exception as e:
-                print(f"Предупреждение: Ошибка при конвертации валюты {currency}: {str(e)}")
+                print(f"Предупреждение: Ошибка при конвертации валюты {currency}: {str(e)}.")
                 return 0.0
         
         return round(total_value, 2)

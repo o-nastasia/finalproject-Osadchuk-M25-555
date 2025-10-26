@@ -3,6 +3,7 @@ import json
 import os
 from typing import Dict, Any, Optional
 from .settings import SettingsLoader
+from datetime import datetime, timedelta
 
 class DatabaseManager:
     _instance = None
@@ -73,35 +74,22 @@ class DatabaseManager:
         file_path = os.path.join(self._data_dir, 'rates.json')
         try:
             with open(file_path, 'r') as f:
-                rates = json.load(f)
-            if not self._is_rate_fresh(rates.get('last_refresh')):
-                return self.update_rates_cache()
-            return rates
+                data = json.load(f)
+            if not self._is_rate_fresh(data.get('last_refresh')):
+                print("Rates are stale. Run 'update-rates' to refresh.")
+            return data.get("pairs", {})
         except (FileNotFoundError, json.JSONDecodeError):
-            return self.update_rates_cache()
+            print("Rates file not found. Run 'update-rates' to initialize.")
+            return {}
 
     def update_rates_cache(self) -> Dict[str, Any]:
-        from datetime import datetime
-        current_time = datetime.now().isoformat()
-        default_rates = {
-            "EUR_USD": {"rate": 1.0786, "updated_at": current_time},
-            "BTC_USD": {"rate": 59337.21, "updated_at": current_time},
-            "RUB_USD": {"rate": 0.01016, "updated_at": current_time},
-            "ETH_USD": {"rate": 3720.00, "updated_at": current_time},
-            "USD_BTC": {"rate": 1 / 59337.21, "updated_at": current_time},
-            "USD_EUR": {"rate": 1 / 1.0786, "updated_at": current_time},
-            "USD_RUB": {"rate": 1 / 0.01016, "updated_at": current_time},
-            "USD_ETH": {"rate": 1 / 3720.00, "updated_at": current_time},
-            "source": "ParserService",
-            "last_refresh": current_time
-        }
-        self._write_json('rates.json', default_rates)
-        return default_rates
+        # Теперь это заглушка, реальное обновление через CLI update-rates
+        print("Use 'update-rates' command to update rates.")
+        return self.get_rates()
 
     def _is_rate_fresh(self, updated_at: str) -> bool:
-        from datetime import datetime, timedelta
         try:
-            updated_time = datetime.fromisoformat(updated_at)
+            updated_time = datetime.fromisoformat(updated_at.replace("Z", ""))
             ttl = self._settings.get('rates_ttl_seconds', 300)
             return datetime.now() - updated_time < timedelta(seconds=ttl)
         except (ValueError, TypeError):

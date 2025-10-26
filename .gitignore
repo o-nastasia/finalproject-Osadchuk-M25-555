@@ -216,3 +216,6 @@ demo.cast
 .ruff_cache/
 *.json
 data/
+.env
+config.json
+logs/

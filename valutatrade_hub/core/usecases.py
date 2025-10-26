@@ -40,7 +40,7 @@ class UseCases:
     def login(username: str, password: str) -> tuple[Optional[User], str]:
         user_data = get_user_by_username(username)
         if not user_data:
-            return None, f"Пользователь '{username}' не найден"
+            return None, f"Пользователь '{username}' не найден."
 
         user = User(
             user_data['user_id'],
@@ -52,7 +52,7 @@ class UseCases:
         user._registration_date = datetime.fromisoformat(user_data['registration_date'])
 
         if not user.verify_password(password):
-            return None, "Неверный пароль"
+            return None, "Неверный пароль."
 
         return user, f"Вы вошли как '{username}'"
 
@@ -65,7 +65,7 @@ class UseCases:
 
         portfolio_data = get_portfolio_by_user_id(user_id)
         if not portfolio_data:
-            return "Портфель не найден"
+            return "Портфель не найден."
 
         portfolio = Portfolio(user_id)
         for currency_code, wallet_data in portfolio_data['wallets'].items():
@@ -75,7 +75,7 @@ class UseCases:
                 wallet.balance = wallet_data['balance']
 
         if not portfolio.wallets:
-            return "У вас нет кошельков"
+            return "У вас нет кошельков."
 
         rates = get_rates()
         if base_currency not in rates and base_currency != 'USD':
@@ -100,7 +100,7 @@ class UseCases:
     @log_action(verbose=True)
     def buy(user_id: int, currency: str, amount: float) -> str:
         if not isinstance(amount, (int, float)) or amount <= 0:
-            return "Сумма должна быть положительным числом"
+            return "Сумма должна быть положительным числом."
         try:
             validate_currency_code(currency)
         except CurrencyNotFoundError as e:
@@ -136,7 +136,7 @@ class UseCases:
         portfolio.add_currency(currency)
         wallet = portfolio.get_wallet(currency)
         if not wallet:
-            return f"Не удалось создать кошелек для валюты '{currency}'"
+            return f"Не удалось создать кошелек для валюты '{currency}.'"
 
         if wallet.deposit(amount):
             save_portfolio(portfolio.to_json())
@@ -145,7 +145,7 @@ class UseCases:
                     f"- USD: было {usd_wallet.balance + cost:.4f} → стало {usd_wallet.balance:.4f}\n"
                     f"- {currency}: было {wallet.balance - amount:.4f} → стало {wallet.balance:.4f}\n"
                     f"Оценочная стоимость покупки: {cost:.2f} USD")
-        return "Не удалось выполнить покупку"
+        return "Не удалось выполнить покупку."
 
     @staticmethod
     @log_action(verbose=True)
@@ -155,11 +155,11 @@ class UseCases:
         try:
             validate_currency_code(currency)
         except CurrencyNotFoundError as e:
-            return f"Ошибка: {e.message}. Используйте команду 'get-rate' для списка валют."
+            return f"Ошибка: {e.message}."
 
         portfolio_data = get_portfolio_by_user_id(user_id)
         if not portfolio_data:
-            return "Портфель не найден"
+            return "Портфель не найден."
 
         portfolio = Portfolio(user_id)
         for currency_code, wallet_data in portfolio_data['wallets'].items():
@@ -204,7 +204,7 @@ class UseCases:
             validate_currency_code(from_currency)
             validate_currency_code(to_currency)
         except CurrencyNotFoundError as e:
-            return f"Ошибка: {e.message}. Используйте команду 'get-rate' для списка валют."
+            return f"Ошибка: {e.message}."
 
         from ..infra.database import DatabaseManager
         db = DatabaseManager()
@@ -224,7 +224,7 @@ class UseCases:
                 updated_at = reverse_updated_at
 
         if rate is None:
-            raise ApiRequestError("Курс недоступен")
+            raise ApiRequestError("Курс недоступен.")
 
         return (f"Курс {from_currency}→{to_currency}: {rate:.8f} "
                 f"(обновлено: {updated_at})\n"
@@ -234,11 +234,11 @@ class UseCases:
     @log_action(verbose=True)
     def deposit(user_id: int, currency: str, amount: float) -> str:
         if not isinstance(amount, (int, float)) or amount <= 0:
-            return "Сумма должна быть положительным числом"
+            return "Сумма должна быть положительным числом."
         try:
             validate_currency_code(currency)
         except CurrencyNotFoundError as e:
-            return f"Ошибка: {e.message}. Используйте команду 'get-rate' для списка валют."
+            return f"Ошибка: {e.message}."
 
         portfolio_data = get_portfolio_by_user_id(user_id)
         if not portfolio_data:
@@ -254,9 +254,9 @@ class UseCases:
         portfolio.add_currency(currency)
         wallet = portfolio.get_wallet(currency)
         if not wallet:
-            return f"Не удалось создать кошелек для валюты '{currency}'"
+            return f"Не удалось создать кошелек для валюты '{currency}'."
 
         if wallet.deposit(amount):
             save_portfolio(portfolio.to_json())
-            return f"Пополнение выполнено: {amount:.2f} {currency} добавлено к кошельку"
-        return "Не удалось выполнить пополнение"
+            return f"Пополнение выполнено: {amount:.2f} {currency} добавлено к кошельку."
+        return "Не удалось выполнить пополнение."
