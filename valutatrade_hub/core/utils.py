@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-from typing import Optional, Dict, Any
+from datetime import datetime
+from typing import Any, Dict, Optional
+
 from ..infra.database import DatabaseManager
 from .currencies import get_currency
 from .exceptions import CurrencyNotFoundError
-from datetime import datetime
+
 
 def get_user_by_id(user_id: int):
     from .models import User

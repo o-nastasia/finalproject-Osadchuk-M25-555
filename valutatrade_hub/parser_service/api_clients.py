@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
-import requests
 from abc import ABC, abstractmethod
-from typing import Dict
 from datetime import datetime
+from typing import Dict
+
+import requests
+
 from ..core.exceptions import ApiRequestError
 from .config import ParserConfig
 
+
 class BaseApiClient(ABC):
+    """Абстрактный клиент для получения курсов валют."""
     @abstractmethod
     def fetch_rates(self) -> Dict[str, Dict[str, any]]:
         pass
 
 class CoinGeckoClient(BaseApiClient):
+    """Клиент для API CoinGecko."""
     def __init__(self, config: ParserConfig):
         self.config = config
         self.config.validate()
@@ -46,6 +51,7 @@ class CoinGeckoClient(BaseApiClient):
             raise ApiRequestError(f"Неудачный запрос CoinGecko: {str(e)}")
 
 class ExchangeRateApiClient(BaseApiClient):
+    """Клиент для API ExchangeRate."""
     def __init__(self, config: ParserConfig):
         self.config = config
         self.config.validate()

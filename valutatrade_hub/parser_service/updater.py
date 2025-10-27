@@ -1,21 +1,24 @@
 #!/usr/bin/env python3
 import logging
-from typing import List
 from datetime import datetime
+from typing import List
+
 from ..core.exceptions import ApiRequestError
-from .config import ParserConfig
 from .api_clients import BaseApiClient, CoinGeckoClient, ExchangeRateApiClient
+from .config import ParserConfig
 from .storage import Storage
 
 logger = logging.getLogger('ParserService')
 
 class RatesUpdater:
+    """Обновляет курсы валют из внешних API."""
     def __init__(self, clients: List[BaseApiClient], storage: Storage):
         self.clients = clients
         self.storage = storage
         self.config = ParserConfig()
 
     def run_update(self, source: str = None) -> int:
+        """Обновляет курсы валют из указанного или всех источников."""
         logger.info("Starting rates update...")
         all_rates = {}
         updated_count = 0
@@ -38,6 +41,7 @@ class RatesUpdater:
         return updated_count
 
 def get_updater() -> RatesUpdater:
+    """Создаёт экземпляр RatesUpdater."""
     config = ParserConfig()
     clients = [
         CoinGeckoClient(config),

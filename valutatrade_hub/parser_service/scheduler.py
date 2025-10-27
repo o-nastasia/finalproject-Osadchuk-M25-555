@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import time
 from threading import Thread
-from .updater import get_updater
+
 from ..infra.settings import SettingsLoader
+from .updater import get_updater
+
 
 class Scheduler:
     def __init__(self):

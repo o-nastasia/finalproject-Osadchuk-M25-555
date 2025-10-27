@@ -1,20 +1,25 @@
 #!/usr/bin/env python3
-from typing import Optional, Dict, List
 from datetime import datetime
-from .models import User, Wallet, Portfolio
-from .utils import (
-    get_user_by_id, get_user_by_username, save_user,
-    get_portfolio_by_user_id, save_portfolio, get_rates,
-    validate_currency_code
-)
-from .exceptions import InsufficientFundsError, CurrencyNotFoundError, ApiRequestError
+from typing import Optional
+
 from ..decorators import log_action
-from .currencies import get_currency
+from .exceptions import ApiRequestError, CurrencyNotFoundError, InsufficientFundsError
+from .models import Portfolio, User
+from .utils import (
+    get_portfolio_by_user_id,
+    get_rates,
+    get_user_by_username,
+    save_portfolio,
+    save_user,
+    validate_currency_code,
+)
+
 
 class UseCases:
     @staticmethod
     @log_action(verbose=True)
     def register(username: str, password: str) -> str:
+        """Регистрирует нового пользователя."""
         if not username.strip():
             return "Имя пользователя не может быть пустым"
         if len(password) < 4:
@@ -38,6 +43,7 @@ class UseCases:
     @staticmethod
     @log_action()
     def login(username: str, password: str) -> tuple[Optional[User], str]:
+        """Авторизует пользователя."""
         user_data = get_user_by_username(username)
         if not user_data:
             return None, f"Пользователь '{username}' не найден."
@@ -58,6 +64,7 @@ class UseCases:
 
     @staticmethod
     def show_portfolio(user_id: int, base_currency: str = 'USD') -> str:
+        """Показывает портфель пользователя."""
         try:
             validate_currency_code(base_currency)
         except CurrencyNotFoundError as e:
@@ -99,6 +106,7 @@ class UseCases:
     @staticmethod
     @log_action(verbose=True)
     def buy(user_id: int, currency: str, amount: float) -> str:
+        """Покупает валюту для пользователя."""
         if not isinstance(amount, (int, float)) or amount <= 0:
             return "Сумма должна быть положительным числом."
         try:
@@ -150,6 +158,7 @@ class UseCases:
     @staticmethod
     @log_action(verbose=True)
     def sell(user_id: int, currency: str, amount: float) -> str:
+        """Продаёт валюту пользователя."""
         if not isinstance(amount, (int, float)) or amount <= 0:
             return "Сумма должна быть положительным числом"
         try:
@@ -200,6 +209,7 @@ class UseCases:
     @staticmethod
     @log_action()
     def get_rate(from_currency: str, to_currency: str) -> str:
+        """Получает курс обмена между валютами."""
         try:
             validate_currency_code(from_currency)
             validate_currency_code(to_currency)
@@ -233,6 +243,7 @@ class UseCases:
     @staticmethod
     @log_action(verbose=True)
     def deposit(user_id: int, currency: str, amount: float) -> str:
+        """Пополняет кошелёк пользователя."""
         if not isinstance(amount, (int, float)) or amount <= 0:
             return "Сумма должна быть положительным числом."
         try:

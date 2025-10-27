@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
+from datetime import datetime
 from functools import wraps
 from typing import Callable
-import logging
-from datetime import datetime
+
+from .core.utils import get_portfolio_by_user_id, get_rates, get_user_by_id
 from .logging_config import setup_logging
-from .core.utils import get_user_by_id, get_portfolio_by_user_id, get_rates
 
 logger = setup_logging()
 

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 from abc import ABC, abstractmethod
-from typing import Optional
+
 from .exceptions import CurrencyNotFoundError
+
 
 class Currency(ABC):
     def __init__(self, name: str, code: str):

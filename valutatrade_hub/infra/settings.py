@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-from typing import Any
 import json
 import os
+from typing import Any
+
 
 class SettingsLoader:
+    """Загружает и хранит конфигурацию из config.json."""
     _instance = None
 
     def __new__(cls):
@@ -25,9 +27,11 @@ class SettingsLoader:
         return cls._instance
 
     def get(self, key: str, default: Any = None) -> Any:
+        """Получает значение конфигурации по ключу."""
         return self._config.get(key, default)
 
     def reload(self):
+        """Перезагружает конфигурацию из config.json."""
         config_file = 'config.json'
         if os.path.exists(config_file):
             try:

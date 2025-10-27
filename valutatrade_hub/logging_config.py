@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import logging
-from logging.handlers import RotatingFileHandler
 import os
+from logging.handlers import RotatingFileHandler
+
 
 def setup_logging():
     log_dir = 'logs'

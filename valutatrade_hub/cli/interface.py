@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 import argparse
+from datetime import datetime
+
+from ..core.exceptions import (
+    ApiRequestError,
+    CurrencyNotFoundError,
+    InsufficientFundsError,
+)
 from ..core.models import User
 from ..core.usecases import UseCases
-from ..core.exceptions import InsufficientFundsError, CurrencyNotFoundError, ApiRequestError
-from ..parser_service.updater import get_updater
-from ..parser_service.storage import Storage
 from ..parser_service.config import ParserConfig
-from ..infra.settings import SettingsLoader
-from datetime import datetime
+from ..parser_service.storage import Storage
+from ..parser_service.updater import get_updater
+
 
 class CLI:
     def __init__(self):

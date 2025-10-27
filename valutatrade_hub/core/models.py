@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-from typing import Dict, Optional
 import hashlib
 import uuid
-from datetime import datetime
 from copy import deepcopy
-from .utils import get_user_by_id
+from datetime import datetime
+from typing import Dict, Optional
+
 from .currencies import get_currency
 from .exceptions import CurrencyNotFoundError, InsufficientFundsError
+from .utils import get_user_by_id
+
 
 class User:
     def __init__(self, user_id: int, username: str, password: str):

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import os
 from dataclasses import dataclass, field
-from typing import Tuple, Dict
+from typing import Dict, Tuple
+
 from dotenv import load_dotenv
 
 load_dotenv()
