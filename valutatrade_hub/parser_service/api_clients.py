@@ -14,7 +14,7 @@ class BaseApiClient(ABC):
 class CoinGeckoClient(BaseApiClient):
     def __init__(self, config: ParserConfig):
         self.config = config
-        self.config.validate()  # Проверяем конфигурацию при инициализации
+        self.config.validate()
 
     def fetch_rates(self) -> Dict[str, Dict[str, any]]:
         ids = ",".join(self.config.CRYPTO_ID_MAP.values())
@@ -43,12 +43,12 @@ class CoinGeckoClient(BaseApiClient):
                     }
             return rates
         except requests.RequestException as e:
-            raise ApiRequestError(f"CoinGecko request failed: {str(e)}")
+            raise ApiRequestError(f"Неудачный запрос CoinGecko: {str(e)}")
 
 class ExchangeRateApiClient(BaseApiClient):
     def __init__(self, config: ParserConfig):
         self.config = config
-        self.config.validate()  # Проверяем конфигурацию при инициализации
+        self.config.validate()
 
     def fetch_rates(self) -> Dict[str, Dict[str, any]]:
         url = f"{self.config.EXCHANGERATE_API_URL}/{self.config.EXCHANGERATE_API_KEY}/latest/{self.config.BASE_CURRENCY}"
@@ -57,7 +57,7 @@ class ExchangeRateApiClient(BaseApiClient):
             response.raise_for_status()
             data = response.json()
             if data.get("result") != "success":
-                raise ApiRequestError(f"ExchangeRate-API error: {data.get('error-type', 'Unknown')}")
+                raise ApiRequestError(f"Ошибка ExchangeRate-API: {data.get('error-type', 'Unknown')}")
             rates = {}
             current_time = data.get("time_last_update_utc", datetime.utcnow().isoformat() + "Z")
             for fiat in self.config.FIAT_CURRENCIES:
@@ -69,7 +69,7 @@ class ExchangeRateApiClient(BaseApiClient):
                         "updated_at": current_time,
                         "source": "ExchangeRate-API"
                     }
-                    # Добавляем обратный курс
+
                     reverse_key = f"{self.config.BASE_CURRENCY}_{fiat}"
                     rates[reverse_key] = {
                         "rate": 1 / rate if rate != 0 else 0,
@@ -78,4 +78,4 @@ class ExchangeRateApiClient(BaseApiClient):
                     }
             return rates
         except requests.RequestException as e:
-            raise ApiRequestError(f"ExchangeRate-API request failed: {str(e)}")
+            raise ApiRequestError(f"Ошибка ExchangeRate-API: {str(e)}")

@@ -37,7 +37,6 @@ class RatesUpdater:
             logger.info(f"Writing {updated_count} rates to {self.config.RATES_FILE_PATH}...")
         return updated_count
 
-# Инициализация для использования
 def get_updater() -> RatesUpdater:
     config = ParserConfig()
     clients = [

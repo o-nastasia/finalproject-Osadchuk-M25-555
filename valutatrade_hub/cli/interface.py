@@ -42,11 +42,9 @@ class CLI:
         deposit_parser.add_argument('--currency', type=str, required=True)
         deposit_parser.add_argument('--amount', type=float, required=True)
 
-        # Новая команда update-rates
         update_rates_parser = self.subparsers.add_parser('update-rates')
         update_rates_parser.add_argument('--source', type=str, required=False)
 
-        # Новая команда show-rates
         show_rates_parser = self.subparsers.add_parser('show-rates')
         show_rates_parser.add_argument('--currency', type=str, required=False)
         show_rates_parser.add_argument('--top', type=int, required=False)
@@ -125,15 +123,17 @@ class CLI:
                 updater = get_updater()
                 count = updater.run_update(args.source)
                 if count > 0:
-                    print(f"Update successful. Total rates updated: {count}. Last refresh: {datetime.utcnow().isoformat()}")
+                    print(f"Успешно обновлены курсы для {count} валют. Последнее обновление: {datetime.utcnow().strftime("%Y-%m-%d %H:%M")}")
                 else:
-                    print("Update completed with errors. Check logs for details.")
+                    print("Ошибка при обновлении. Подробности в файле logs")
             elif args.command == 'show-rates':
                 config = ParserConfig()
                 storage = Storage(config)
                 data = storage.load_rates()
                 pairs = data.get("pairs", {})
                 last_refresh = data.get("last_refresh", "Unknown")
+                last_refresh = last_refresh[:16].replace("T", " ")
+
                 if not pairs:
                     print("Локальный кеш курсов пуст. Выполните 'update-rates', чтобы загрузить данные.")
                     return
@@ -155,14 +155,13 @@ class CLI:
                         print("Нет данных по указанным фильтрам.")
                     return
 
-                # Сортировка для --top (самые дорогие по rate descending)
                 sorted_pairs = sorted(filtered.items(), key=lambda x: x[1]["rate"], reverse=True)
                 if args.top:
                     sorted_pairs = sorted_pairs[:args.top]
 
-                print(f"Rates from cache (updated at {last_refresh}):")
+                print(f"Курсы из кеша (последнее обновление {last_refresh}):")
                 for key, value in sorted_pairs:
-                    print(f"- {key}: {value['rate']:.8f}")
+                    print(f"- {key}: {value['rate']:.2f}")
             elif args.command == 'help':
                 self.show_help()
             else:

@@ -15,5 +15,3 @@ class Scheduler:
                 self.updater.run_update()
                 time.sleep(self.ttl)
         Thread(target=run, daemon=True).start()
-
-# Пример использования: scheduler = Scheduler(); scheduler.start()

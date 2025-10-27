@@ -76,15 +76,14 @@ class DatabaseManager:
             with open(file_path, 'r') as f:
                 data = json.load(f)
             if not self._is_rate_fresh(data.get('last_refresh')):
-                print("Rates are stale. Run 'update-rates' to refresh.")
+                print("Курс устарел. Примените команду 'update-rates'.")
             return data.get("pairs", {})
         except (FileNotFoundError, json.JSONDecodeError):
-            print("Rates file not found. Run 'update-rates' to initialize.")
+            print("Файл с курсами валют не найден. римените команду 'update-rates'.")
             return {}
 
     def update_rates_cache(self) -> Dict[str, Any]:
-        # Теперь это заглушка, реальное обновление через CLI update-rates
-        print("Use 'update-rates' command to update rates.")
+        print("Команда для обновления курса валют 'update-rates'.")
         return self.get_rates()
 
     def _is_rate_fresh(self, updated_at: str) -> bool:

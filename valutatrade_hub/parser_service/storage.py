@@ -30,7 +30,7 @@ class Storage:
                 "rate": rate_data["rate"],
                 "timestamp": timestamp,
                 "source": rate_data["source"],
-                "meta": {}  # Можно добавить дополнительные мета-данные
+                "meta": {}
             }
             if hist_id not in [e["id"] for e in history]:
                 history.append(entry)
