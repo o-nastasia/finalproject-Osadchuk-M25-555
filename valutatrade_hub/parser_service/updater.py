@@ -37,7 +37,7 @@ class RatesUpdater:
             current_time = datetime.utcnow().isoformat() + "Z"
             self.storage.save_rates(all_rates, current_time)
             self.storage.save_history(all_rates)
-            logger.info(f"Writing {updated_count} rates to {self.config.RATES_FILE_PATH}...")
+            logger.info(f"Writing {updated_count} rates to {self.config.RATES_FILE_PATH}...")#noqa: E501
         return updated_count
 
 def get_updater() -> RatesUpdater:

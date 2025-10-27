@@ -23,7 +23,7 @@ class SettingsLoader:
                     with open(config_file, 'r') as f:
                         cls._instance._config.update(json.load(f))
                 except Exception as e:
-                    print(f"Предупреждение: Не удалось загрузить конфигурацию: {str(e)}")
+                    print(f"Предупреждение: Не удалось загрузить конфигурацию: {str(e)}")#noqa: E501
         return cls._instance
 
     def get(self, key: str, default: Any = None) -> Any:
@@ -38,4 +38,4 @@ class SettingsLoader:
                 with open(config_file, 'r') as f:
                     self._config.update(json.load(f))
             except Exception as e:
-                print(f"Предупреждение: Не удалось перезагрузить конфигурацию: {str(e)}")
+                print(f"Предупреждение: Не удалось перезагрузить конфигурацию: {str(e)}")#noqa: E501

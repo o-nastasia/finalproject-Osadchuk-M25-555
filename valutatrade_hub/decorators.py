@@ -41,7 +41,8 @@ def log_action(verbose: bool = False) -> Callable:
                 }
                 if verbose and action in ['BUY', 'SELL', 'DEPOSIT']:
                     portfolio_before = get_portfolio_by_user_id(user_id)
-                    log_data['portfolio_before'] = portfolio_before.get('wallets', {}) if portfolio_before else {}
+                    log_data['portfolio_before'] = portfolio_before.get('wallets', {}) \
+                        if portfolio_before else {}
                 
                 logger.info(f"{log_data}")
                 return result

@@ -31,7 +31,9 @@ class ParserConfig:
     def validate(self) -> None:
         if self.EXCHANGERATE_API_KEY == "KEY":
             raise ValueError("EXCHANGERATE_API_KEY не задан в переменных окружения")
-        if not all(isinstance(code, str) and 2 <= len(code) <= 5 for code in self.FIAT_CURRENCIES):
+        if not all(isinstance(code, str) and 2 <= len(code) <= 5 for \
+                   code in self.FIAT_CURRENCIES):
             raise ValueError("Некорректные коды фиатных валют")
-        if not all(isinstance(code, str) and 2 <= len(code) <= 5 for code in self.CRYPTO_CURRENCIES):
+        if not all(isinstance(code, str) and 2 <= len(code) <= 5 for \
+                   code in self.CRYPTO_CURRENCIES):
             raise ValueError("Некорректные коды криптовалют")

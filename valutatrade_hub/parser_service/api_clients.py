@@ -57,15 +57,15 @@ class ExchangeRateApiClient(BaseApiClient):
         self.config.validate()
 
     def fetch_rates(self) -> Dict[str, Dict[str, any]]:
-        url = f"{self.config.EXCHANGERATE_API_URL}/{self.config.EXCHANGERATE_API_KEY}/latest/{self.config.BASE_CURRENCY}"
+        url = f"{self.config.EXCHANGERATE_API_URL}/{self.config.EXCHANGERATE_API_KEY}/latest/{self.config.BASE_CURRENCY}"#noqa: E501
         try:
             response = requests.get(url, timeout=self.config.REQUEST_TIMEOUT)
             response.raise_for_status()
             data = response.json()
             if data.get("result") != "success":
-                raise ApiRequestError(f"Ошибка ExchangeRate-API: {data.get('error-type', 'Unknown')}")
+                raise ApiRequestError(f"Ошибка ExchangeRate-API: {data.get('error-type', 'Unknown')}")#noqa: E501
             rates = {}
-            current_time = data.get("time_last_update_utc", datetime.utcnow().isoformat() + "Z")
+            current_time = data.get("time_last_update_utc", datetime.utcnow().isoformat() + "Z")#noqa: E501
             for fiat in self.config.FIAT_CURRENCIES:
                 if fiat in data["conversion_rates"]:
                     rate = data["conversion_rates"][fiat]

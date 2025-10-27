@@ -13,7 +13,7 @@ def setup_logging():
     logger.setLevel(logging.INFO)
 
     handler = RotatingFileHandler(log_file, maxBytes=10*1024*1024, backupCount=5)
-    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')#noqa: E501
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 

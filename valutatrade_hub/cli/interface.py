@@ -55,7 +55,7 @@ class CLI:
         show_rates_parser.add_argument('--top', type=int, required=False)
         show_rates_parser.add_argument('--base', type=str, default='USD')
 
-        help_parser = self.subparsers.add_parser('help')
+        self.subparsers.add_parser('help')
 
         print("Добро пожаловать в ValutaTrade CLI!")
         self.show_help()
@@ -73,7 +73,7 @@ class CLI:
         print("\nsell --currency <currency> --amount <amount>")
         print("Продать валюту\n*******")
         print("\nget-rate --from <currency> --to <currency>")
-        print("Получить курс валют (поддерживаемые валюты: USD, EUR, BTC, ETH)\n*******")
+        print("Получить курс валют (поддерживаемые валюты: USD, EUR, BTC, ETH)\n*******")#noqa: E501
         print("\ndeposit --currency <currency> --amount <amount>")
         print("Пополнить баланс\n*******")
         print("\nupdate-rates [--source <coingecko|exchangerate>]")
@@ -115,20 +115,20 @@ class CLI:
                     print("Сначала выполните login")
                     return
                 if args.command == 'show-portfolio':
-                    print(UseCases.show_portfolio(self.current_user.user_id, args.base.upper()))
+                    print(UseCases.show_portfolio(self.current_user.user_id, args.base.upper()))#noqa: E501
                 elif args.command == 'buy':
-                    print(UseCases.buy(self.current_user.user_id, args.currency.upper(), args.amount))
+                    print(UseCases.buy(self.current_user.user_id, args.currency.upper(), args.amount))#noqa: E501
                 elif args.command == 'sell':
-                    print(UseCases.sell(self.current_user.user_id, args.currency.upper(), args.amount))
+                    print(UseCases.sell(self.current_user.user_id, args.currency.upper(), args.amount))#noqa: E501
                 elif args.command == 'deposit':
-                    print(UseCases.deposit(self.current_user.user_id, args.currency.upper(), args.amount))
+                    print(UseCases.deposit(self.current_user.user_id, args.currency.upper(), args.amount))#noqa: E501
             elif args.command == 'get-rate':
                 print(UseCases.get_rate(args.__dict__['from'].upper(), args.to.upper()))
             elif args.command == 'update-rates':
                 updater = get_updater()
                 count = updater.run_update(args.source)
                 if count > 0:
-                    print(f"Успешно обновлены курсы для {count} валют. Последнее обновление: {datetime.utcnow().strftime("%Y-%m-%d %H:%M")}")
+                    print(f"Успешно обновлены курсы для {count} валют. Последнее обновление: {datetime.utcnow().strftime("%Y-%m-%d %H:%M")}")#noqa: E501
                 else:
                     print("Ошибка при обновлении. Подробности в файле logs")
             elif args.command == 'show-rates':
@@ -140,7 +140,7 @@ class CLI:
                 last_refresh = last_refresh[:16].replace("T", " ")
 
                 if not pairs:
-                    print("Локальный кеш курсов пуст. Выполните 'update-rates', чтобы загрузить данные.")
+                    print("Локальный кеш курсов пуст. Выполните 'update-rates', чтобы загрузить данные.")#noqa: E501
                     return
 
                 filtered = {}
@@ -160,7 +160,8 @@ class CLI:
                         print("Нет данных по указанным фильтрам.")
                     return
 
-                sorted_pairs = sorted(filtered.items(), key=lambda x: x[1]["rate"], reverse=True)
+                sorted_pairs = sorted(filtered.items(), \
+                                      key=lambda x: x[1]["rate"], reverse=True)
                 if args.top:
                     sorted_pairs = sorted_pairs[:args.top]
 

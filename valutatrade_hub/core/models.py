@@ -32,7 +32,7 @@ class User:
 
     def _validate_password(self, password: str) -> Optional[str]:
         if not isinstance(password, str) or len(password) < 4:
-            print("Предупреждение: Пароль должен быть строкой длиной не менее 4 символов")
+            print("Предупреждение: Пароль должен быть строкой длиной не менее 4 символов")#noqa: E501
             return None
         return password
 
@@ -137,7 +137,8 @@ class Wallet:
         if validated_amount is None:
             return False
         if validated_amount > self._balance:
-            raise InsufficientFundsError(self._balance, validated_amount, self.currency_code)
+            raise InsufficientFundsError\
+                (self._balance, validated_amount, self.currency_code)
         self._balance -= validated_amount
         return True
 
@@ -170,7 +171,7 @@ class Portfolio:
         try:
             currency = get_currency(currency_code)
             if currency.code in self._wallets:
-                print(f"Предупреждение: Кошелёк для валюты {currency_code} уже существует.")
+                print(f"Предупреждение: Кошелёк для валюты {currency_code} уже существует.")#noqa: E501
                 return False
             self._wallets[currency.code] = Wallet(currency.code)
             return True
@@ -211,11 +212,11 @@ class Portfolio:
                     rate_key = f"{currency}_{base_currency}"
                     rate = rates.get(rate_key, {}).get('rate', None)
                     if rate is None:
-                        print(f"Предупреждение: Курс для валюты {currency}→{base_currency} не найден.")
+                        print(f"Предупреждение: Курс для валюты {currency}→{base_currency} не найден.")#noqa: E501
                         return 0.0
                     total_value += balance * rate
             except Exception as e:
-                print(f"Предупреждение: Ошибка при конвертации валюты {currency}: {str(e)}.")
+                print(f"Предупреждение: Ошибка при конвертации валюты {currency}: {str(e)}.")#noqa: E501
                 return 0.0
         
         return round(total_value, 2)
@@ -223,5 +224,6 @@ class Portfolio:
     def to_json(self) -> dict:
         return {
             "user_id": self._user_id,
-            "wallets": {code: {"balance": wallet.balance} for code, wallet in self._wallets.items()}
+            "wallets": {code: {"balance": wallet.balance} for \
+                        code, wallet in self._wallets.items()}
         }

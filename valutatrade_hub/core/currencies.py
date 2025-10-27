@@ -6,8 +6,9 @@ from .exceptions import CurrencyNotFoundError
 
 class Currency(ABC):
     def __init__(self, name: str, code: str):
-        if not isinstance(code, str) or not (2 <= len(code.strip()) <= 5) or ' ' in code:
-            raise ValueError("Код валюты должен быть строкой от 2 до 5 символов без пробелов")
+        if not isinstance(code, str) or not (2 <= len(code.strip()) <= 5) \
+            or ' ' in code:
+            raise ValueError("Код валюты должен быть строкой от 2 до 5 символов без пробелов")#noqa: E501
         if not isinstance(name, str) or not name.strip():
             raise ValueError("Имя валюты не может быть пустым")
         self._name = name.strip()
@@ -46,9 +47,8 @@ class CryptoCurrency(Currency):
         self._market_cap = float(market_cap)
 
     def get_display_info(self) -> str:
-        return f"[CRYPTO] {self.code} — {self.name} (Algo: {self._algorithm}, MCAP: {self._market_cap:.2e})"
+        return f"[CRYPTO] {self.code} — {self.name} (Algo: {self._algorithm}, MCAP: {self._market_cap:.2e})"#noqa: E501
 
-# Реестр валют
 _currency_registry = {
     "USD": FiatCurrency("US Dollar", "USD", "United States"),
     "EUR": FiatCurrency("Euro", "EUR", "Eurozone"),

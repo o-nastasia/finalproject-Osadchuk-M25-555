@@ -38,7 +38,7 @@ class UseCases:
         portfolio = Portfolio(user_id)
         save_portfolio(portfolio.to_json())
 
-        return f"Пользователь '{username}' зарегистрирован (id={user_id}). Войдите: login --username {username} --password ****"
+        return f"Пользователь '{username}' зарегистрирован (id={user_id}). Войдите: login --username {username} --password ****"#noqa: E501
 
     @staticmethod
     @log_action()
@@ -88,13 +88,13 @@ class UseCases:
         if base_currency not in rates and base_currency != 'USD':
             return f"Неизвестная базовая валюта '{base_currency}'"
 
-        result = [f"Портфель пользователя '{portfolio.user.username}' (база: {base_currency}):"]
+        result = [f"Портфель пользователя '{portfolio.user.username}' (база: {base_currency}):"]#noqa: E501
         total_value = 0.0
         for currency, wallet in portfolio.wallets.items():
             balance = wallet.balance
             rate = rates.get(f"{currency}_{base_currency}", {}).get('rate', None)
             if rate is None and currency != base_currency:
-                return f"Не удалось получить курс для {currency}→{base_currency}. Повторите позже."
+                return f"Не удалось получить курс для {currency}→{base_currency}. Повторите позже."#noqa: E501
             value = balance if currency == base_currency else balance * rate
             total_value += value
             result.append(f"- {currency}: {balance:.2f} → {value:.2f} {base_currency}")
@@ -148,10 +148,10 @@ class UseCases:
 
         if wallet.deposit(amount):
             save_portfolio(portfolio.to_json())
-            return (f"Покупка выполнена: {amount:.4f} {currency} по курсу {rate:.2f} USD/{currency}\n"
+            return (f"Покупка выполнена: {amount:.4f} {currency} по курсу {rate:.2f} USD/{currency}\n"#noqa: E501
                     f"Изменения в портфеле:\n"
-                    f"- USD: было {usd_wallet.balance + cost:.4f} → стало {usd_wallet.balance:.4f}\n"
-                    f"- {currency}: было {wallet.balance - amount:.4f} → стало {wallet.balance:.4f}\n"
+                    f"- USD: было {usd_wallet.balance + cost:.2f} → стало {usd_wallet.balance:.2f}\n"#noqa: E501
+                    f"- {currency}: было {wallet.balance - amount:.4f} → стало {wallet.balance:.4f}\n"#noqa: E501
                     f"Оценочная стоимость покупки: {cost:.2f} USD")
         return "Не удалось выполнить покупку."
 
@@ -179,7 +179,7 @@ class UseCases:
 
         wallet = portfolio.get_wallet(currency)
         if not wallet:
-            return f"У вас нет кошелька '{currency}'. Добавьте валюту: она создаётся автоматически при первой покупке."
+            return f"У вас нет кошелька '{currency}'. Добавьте валюту: она создаётся автоматически при первой покупке."#noqa: E501
 
         try:
             wallet.withdraw(amount)
@@ -200,10 +200,10 @@ class UseCases:
 
         save_portfolio(portfolio.to_json())
         revenue = amount * rate
-        return (f"Продажа выполнена: {amount:.4f} {currency} по курсу {rate:.2f} USD/{currency}\n"
+        return (f"Продажа выполнена: {amount:.4f} {currency} по курсу {rate:.2f} USD/{currency}\n"#noqa: E501
                 f"Изменения в портфеле:\n"
-                f"- {currency}: было {wallet.balance + amount:.4f} → стало {wallet.balance:.4f}\n"
-                f"- USD: было {usd_wallet.balance - revenue:.4f} → стало {usd_wallet.balance:.4f}\n"
+                f"- {currency}: было {wallet.balance + amount:.4f} → стало {wallet.balance:.4f}\n"#noqa: E501
+                f"- USD: было {usd_wallet.balance - revenue:.4f} → стало {usd_wallet.balance:.2f}\n"#noqa: E501
                 f"Оценочная выручка: {revenue:.2f} USD")
 
     @staticmethod
@@ -269,5 +269,5 @@ class UseCases:
 
         if wallet.deposit(amount):
             save_portfolio(portfolio.to_json())
-            return f"Пополнение выполнено: {amount:.2f} {currency} добавлено к кошельку."
+            return f"Пополнение выполнено: {amount:.2f} {currency} добавлено к кошельку."#noqa: E501
         return "Не удалось выполнить пополнение."

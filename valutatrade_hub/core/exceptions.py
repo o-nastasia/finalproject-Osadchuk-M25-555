@@ -2,7 +2,7 @@
 
 class InsufficientFundsError(Exception):
     def __init__(self, available: float, required: float, code: str):
-        self.message = f"Недостаточно средств: доступно {available:.4f} {code}, требуется {required:.4f} {code}"
+        self.message = f"Недостаточно средств: доступно {available:.2f} {code}, требуется {required:.2f} {code}"#noqa: E501
         super().__init__(self.message)
 
 class CurrencyNotFoundError(Exception):
