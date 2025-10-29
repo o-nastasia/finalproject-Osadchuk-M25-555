@@ -115,6 +115,8 @@ ValutaTrade Hub — это CLI-приложение для симуляции т
 
 ## Демо
 
+[![asciicast](https://asciinema.org/a/nDFkXDQuZATN5Lejw5EEVoyGX.svg)](https://asciinema.org/a/nDFkXDQuZATN5Lejw5EEVoyGX)
+
 ## Автор
 
 Анастасия Осадчук ([o-nastasia](https://github.com/o-nastasia)) группа M25-555.
